@@ -12,6 +12,9 @@ const bluebird = require('bluebird');
 const inspect = require('util').inspect;
 const opts = { colors: true, depth: Infinity };
 
+//routes
+const api = require('./routes/api');
+
 //Bootstrap MongoDB with mongoose and promisify with bluebird
 mongoose.Promise = bluebird;
 mongoose.set('debug', true);
@@ -42,7 +45,10 @@ function go (db) {
   app.use(bodyParser.json({ type: 'application/json'}));
 
   //Deny access to endpoints without valid jwt token
-  app.use('/api', expressJwt({ secret: config.JWT_SECRET }));
+  app.use('/api', expressJwt({ secret: config.JWT_SECRET }).unless({ path: ['/api/auth', '/api/register'] }));
+
+  //Routes
+  app.use('/api', api);
 
   //Error handler outputs error stack
   app.use(function (e, req, res, next) {
