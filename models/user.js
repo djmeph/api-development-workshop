@@ -12,7 +12,7 @@ const reasons = UserSchema.statics.failedLogin = {
   PASSWORD_INCORRECT: 1
 };
 
-UserSchema.methods.comparePassword = (candidatePassword, cb) => {
+UserSchema.methods.comparePassword = function (candidatePassword, cb) {
 
   bcrypt.compare(candidatePassword, this.password, (e, isMatch) => {
     if (e) return cb(e);
@@ -21,10 +21,10 @@ UserSchema.methods.comparePassword = (candidatePassword, cb) => {
 
 }
 
-UserSchema.statics.getAuthenticated = (email, password, cb) => {
+UserSchema.statics.getAuthenticated = function (email, password, cb) {
 
   this
-    .findOne({ email: email })
+    .findOne({ email: email.toLowerCase() })
     .exec((e, user) => {
 
       if (e) return cb(e);
@@ -33,22 +33,24 @@ UserSchema.statics.getAuthenticated = (email, password, cb) => {
       user.comparePassword(password, (e, isMatch) => {
         if (e) return cb(e);
         if (isMatch) return cb(null, user);
+        else return cb(null, null, reasons.PASSWORD_INCORRECT);
       });
 
     });
 
 }
 
-UserSchema.pre('save', (next) => {
+UserSchema.pre('save', function (next) {
 
   var user = this;
   if (!user.isModified('password')) return next();
+  if (user.isModified('email')) user.email = user.email.toLowerCase();
 
   bcrypt.genSalt(SALT_WORK_FACTOR, (e, salt) => {
 
     if (e) return next(e);
 
-    bcrypt.hash(user.password, salt, null, (e, hash) {
+    bcrypt.hash(user.password, salt, null, (e, hash) => {
       if (e) return next(e);
       user.password = hash;
       next();
