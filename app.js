@@ -18,7 +18,7 @@ const api = require('./routes/api');
 //Bootstrap MongoDB with mongoose and promisify with bluebird
 mongoose.Promise = bluebird;
 mongoose.set('debug', true);
-mongoose.connect(config.MONGODB_URI).then(go, fail);
+mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true }).then(go, fail);
 
 //Triggered when MongoDB is connected
 function go (db) {
