@@ -10,9 +10,9 @@ module.exports = library;
 
 function Auth (req, res, next) {
 
-  User.auth(req.body.email, req.body.password).then(res => {
+  User.auth(req.body.email, req.body.password).then(result => {
 
-    req.data = { status: 200, result: res };
+    req.data = { status: 200, result: result };
     return next();
 
   }, e => {
@@ -67,7 +67,7 @@ function Put (req, res, next) {
   else update();
 
   function update () {
-    User.update(req.user._id, req.body).then(() => {
+    User.update(req.user._id, payload).then(() => {
       req.data = { status: 200, result: {} };
       return next();
     }, e => {

@@ -1,6 +1,6 @@
 const JWT_SECRET = require('../config.json').JWT_SECRET;
 const EXPIRY = 86400;
-const bluebird = require('bluebird');
+const Promise = require('bluebird');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const service = {};
